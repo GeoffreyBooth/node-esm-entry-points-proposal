@@ -10,7 +10,7 @@ This proposal aims to define how Node should determine the module format (Common
 
 - extensionless files, e.g. `/usr/local/bin/npm`
 
-- `--eval`, e.g. `node --eval 'console.log("hello")'`
+- `--eval` and `--print`, e.g. `node --eval 'console.log("hello")'`
 
 - `STDIN`, e.g. `echo 'console.log("hello")' | node`
 
@@ -95,10 +95,8 @@ node --type=commonjs --eval 'const { sep } = require("path"); console.log(sep)'
 
 The command line flags `--type=auto` and `-a` tell Node to detect the module format for potentially ambiguous entry points (`.js` and extensionless files, string input via `--eval` or `STDIN`). The algorithm for this is to be determined in implementation; two possibilities are:
 
-1. Parse the source code of the entry point. If it is unambiguously ESM (has `import` or `export` statements) evaluate as ESM. If it is unambiguously CommonJS (references global `require`, `module`, `exports`, `__filename`, or `__dirname`) evaluate as CommonJS. Else evaluate as ESM.
+1. Parse the source code of the entry point. If it can be detected as unambiguously ESM (has `import` or `export` statements, etc.) evaluate as ESM. If it can be detected as unambiguously CommonJS (references global `require`, `module`, `exports`, `__filename`, or `__dirname`, etc.) evaluate as CommonJS. Else evaluate as ESM.
 
 1. Attempt to evaluate the entry point as ESM. If it throws an error, either any error or an error such as a `ReferenceError` that `require`, `module`, `exports`, `__filename`, or `__dirname` (the CommonJS globals) are not defined, catch the error and try to evaluate as CommonJS.
 
 In either case, `--type=auto` evaluates “ambiguous” source code, that could evaluate successfully as either ESM or CommonJS, as ESM. This differs from Node’s current behavior of evaluating ambiguous files as CommonJS, because ESM is the standard now and therefore should be the default. Evaluating ESM first is also more performant if the second algorithm is used.
-
-This flag is needed because the user might not know the parse goal of the input. For example, `coffee --eval 'import "fs"'` pipes to Node as `node --eval 'import "fs";'`, but the `coffee` command didn’t know the parse goal of its initial input. Similar situations arise for TypeScript, Babel and other tools that take unknown source code as user input. While the tools themselves could essentially `try`/`catch` with running Node in one mode and then the other, it is more performant and consistent across tools for Node to provide such a service.
