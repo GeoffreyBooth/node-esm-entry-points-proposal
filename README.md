@@ -102,3 +102,5 @@ The command line flags `--type=auto` and `-a` tell Node to detect the module for
 3. If the source code is unambiguously CommonJS (references global `require`, `module`, `exports`, `__filename`, or `__dirname`, etc.) evaluate as CommonJS. *Else:*
 
 4. Throw an error that the initial entry point is ambiguous and the type cannot be automatically detected.
+
+The detailed algorithm for this is [here](./type-auto-algorithm.md).
