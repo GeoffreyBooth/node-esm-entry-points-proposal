@@ -38,8 +38,6 @@ If the source code contains any of the following:
 
 - A reference to `arguments` in the top scope.
 
-- A reference to `this` in the top scope.
-
 - A reference to `return` in the top scope.
 
 Then the file is unambiguously CommonJS. Stop and execute it as CommonJS JavaScript.
