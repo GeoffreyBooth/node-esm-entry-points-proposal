@@ -93,12 +93,10 @@ node --type=commonjs --eval 'const { sep } = require("path"); console.log(sep)'
 
 ### `--type=auto` flag
 
-The command line flags `--type=auto` and `-a` tell Node to detect the module format for potentially ambiguous entry points (`.js` and extensionless files, string input via `--eval` or `STDIN`). The algorithm for this in broad terms is as follows:
+The command line flags `--type=auto` and `-a` tell Node to detect the module format for potentially ambiguous entry points (`.js` and extensionless files, string input via `--eval` or `STDIN`). The algorithm for this is as follows:
 
 1. Parse the source code of the initial entry point.
 
 2. If the source code is unambiguously ESM (has `import` or `export` statements, etc.) evaluate as ESM. *Else:*
 
-3. If the source code is unambiguously CommonJS (references global `require`, `module`, `exports`, `__filename`, or `__dirname`, etc.) evaluate as CommonJS. *Else:*
-
-4. Throw an error that the initial entry point is ambiguous and the type cannot be automatically detected.
+3. Evaluate as CommonJS.
